@@ -2,7 +2,7 @@
 
 Building a vision-guided pan-tilt camera turret. 
 
-**V1 milestone (current): end-to-end UART command link validated.**
+**Current status: end-to-end UART command link validated.**
 A Raspberry Pi 5 sends motion commands over UART to an STM32, which parses them,
 drives a TB6612FNG motor driver, and echoes a debug response back to the Pi.
 
