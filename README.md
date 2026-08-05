@@ -1,4 +1,4 @@
-# Pan-Tilt Camera Turret — V1
+# Pan-Tilt Camera
 
 Building a vision-guided pan-tilt camera turret. 
 
