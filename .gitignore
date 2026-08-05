@@ -3,3 +3,4 @@ Release/
 .settings/
 *.launch
 .metadata/
+.DS_Store
