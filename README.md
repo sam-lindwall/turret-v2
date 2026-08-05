@@ -38,7 +38,7 @@ flowchart LR
     end
 
     CMD -- "p{int} t{int} @ 115200" --> RX
-    CMD <-- "encoder angle" --- ENC
+    ENC -- "encoder angle" --> CMD
 ```
 
 - **STM32 Nucleo-F446RE** — real-time motor control: UART command parsing, I2C communication with encoders,
