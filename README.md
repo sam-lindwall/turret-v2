@@ -22,9 +22,8 @@ flowchart LR
         CAM["IMX296 global shutter<br/>+ capture timestamp"]
         YOLO["YOLO / NCNN"]
         OFF["pixel offset"]
-        INTERP["interpolate encoder<br/>to capture instant"]
         CMD["cmd = encoder + offset"]
-        CAM --> YOLO --> OFF --> INTERP --> CMD
+        CAM --> YOLO --> OFF --> CMD
     end
 
     subgraph STM["STM32 Nucleo-F446RE — control, 160 Hz"]
@@ -39,7 +38,7 @@ flowchart LR
     end
 
     CMD -- "p{int} t{int} @ 115200" --> RX
-    LOOP -- "telemetry" --> INTERP
+    CMD <-- "encoder angle" --- ENC
 ```
 
 - **STM32 Nucleo-F446RE** — real-time motor control: UART command parsing, I2C communication with encoders,
