@@ -2,6 +2,15 @@
 
 Runs object detection on a Raspberry Pi 5 and a PID loop on an STM32 Nucleo-F446RE to track a hand's motion
 
+## Concepts applied
+- **PID Control**
+- **UART, I2C**
+- **Interrupts, Timers**
+- **Pulse Width Modulation (PWM)**
+- **State Machines**
+
+
+<img width="699" height="643" alt="PNG image" src="https://github.com/user-attachments/assets/ec6f8476-9d0b-444c-a285-4556ea28e43d" />
 
 ## Architecture
 
