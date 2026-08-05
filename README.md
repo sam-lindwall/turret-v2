@@ -9,32 +9,37 @@ Runs object detection on a Raspberry Pi 5 and a PID loop on an STM32 Nucleo-F446
 - **Pulse Width Modulation (PWM)**
 - **State Machines**
 
+## CubeMX GPIO Pin Assignment
 
 <img width="699" height="643" alt="PNG image" src="https://github.com/user-attachments/assets/ec6f8476-9d0b-444c-a285-4556ea28e43d" />
 
-## Architecture
 
+## Architecture
 ```mermaid
-flowchart TB
+flowchart LR
     subgraph PI["Raspberry Pi 5 — perception, ~5 Hz"]
-        CAM[IMX296 global shutter] --> YOLO[YOLO / NCNN]
-        YOLO --> OFF[pixel offset x,y]
-        CAM -- SensorTimestamp --> INTERP[interpolate encoder<br/>to capture instant]
-        OFF --> CMD["cmd = enc·cap_t· + offset"]
-        INTERP --> CMD
+        direction TB
+        CAM["IMX296 global shutter<br/>+ capture timestamp"]
+        YOLO["YOLO / NCNN"]
+        OFF["pixel offset"]
+        INTERP["interpolate encoder<br/>to capture instant"]
+        CMD["cmd = encoder + offset"]
+        CAM --> YOLO --> OFF --> INTERP --> CMD
     end
 
     subgraph STM["STM32 Nucleo-F446RE — control, 160 Hz"]
-        RX["USART3 RX byte ISR"] --> PARSE[parse] --> TGT[target angle]
-        TIM3["TIM3 @ 160 Hz"] --> LOOP
-        TGT --> LOOP["PID + friction feedforward<br/>deadband w/ hysteresis, slew limit"]
-        ENC["MT6701 14-bit absolute<br/>I2C1 pan · I2C3 tilt"] --> LOOP
-        LOOP --> PWM[TIM2 PWM] --> DRV[TB6612FNG] --> MOT["2× 12 V gearmotor<br/>pan · tilt"]
-        MOT -.-> ENC
+        direction TB
+        RX["USART3 RX + parse"]
+        LOOP["PID + friction feedforward<br/>deadband, slew limit"]
+        PWM["TIM2 PWM → TB6612FNG"]
+        MOT["2× 12 V gearmotor<br/>pan · tilt"]
+        ENC["MT6701 encoders<br/>I2C1 pan · I2C3 tilt"]
+        RX --> LOOP --> PWM --> MOT --> ENC
+        ENC -.-> LOOP
     end
 
-    CMD -- "p{int} t{int}\n @ 115200" --> RX
-    STM -- "p%.2ft%.2f\n telemetry" --> INTERP
+    CMD -- "p{int} t{int} @ 115200" --> RX
+    LOOP -- "telemetry" --> INTERP
 ```
 
 - **STM32 Nucleo-F446RE** — real-time motor control: UART command parsing, I2C communication with encoders,
