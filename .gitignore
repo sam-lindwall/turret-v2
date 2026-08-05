@@ -1,29 +1,5 @@
-# ---- STM32CubeIDE / build artifacts ----
 Debug/
 Release/
-*.o
-*.d
-*.elf
-*.bin
-*.hex
-*.map
-*.list
-*.su
-
-# CubeIDE workspace metadata
+.settings/
+*.launch
 .metadata/
-RemoteSystemsTempFiles/
-.Trash-*
-
-# ---- Python (Pi-side scripts) ----
-.venv/
-__pycache__/
-*.pyc
-*.pyo
-.python-version
-
-# ---- OS / editor ----
-.DS_Store
-Thumbs.db
-.vscode/
-*.swp
