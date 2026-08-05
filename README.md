@@ -6,36 +6,31 @@ Runs object detection on a Raspberry pi 5 and a PID loop built on an STM32 Nucel
 ## Architecture
 
 Two processors split by timing requirement: perception on the Pi where a
-150-200 ms inference budget is acceptable, control on the STM32 where a
+150–200 ms inference budget is acceptable, control on the STM32 where a
 160 Hz loop has to be deterministic.
 
-┌─────────────────────── Raspberry Pi 5 ───────────────────────┐
-│                                                              │
-│  IMX296 Camera ──▶ NCNN ──▶ pixel offset (x,y)  │
-│         │                                       │            │
-│         │ SensorTimestamp                       ▼            │
-│         └────────────────────────▶ encoder interpolated to   │
-│                                    the capture instant       │
-│                                             │                │
-│                                    cmd = enc(cap_t) + offset │
-└─────────────────────────────────────────────┼────────────────┘
-                                              │
-                    "p{int} t{int}\n"  ───────┤  UART @ 115200
-                    "p%.2ft%.2f\n"     ◀──────┘  (telemetry back)
-                                              │
-┌────────────────────── STM32 Nucleo-F446RE ──┼────────────────┐
-│                                              ▼               │
-│  USART3 RX (byte ISR) ──▶ parse ──▶ target angle             │
-│                                        │                     │
-│  TIM3 @ 160 Hz ──▶ ┌───────────────────▼──────────────────┐  │
-│                    │ read encoders (I2C)                  │  │
-│                    │ PID           
-│                    └───────────────┬──────────────────────┘  │
-│                                    ▼                         │
-│  TIM2 PWM ──▶ TB6612FNG ──▶ 2x 12V gearmotor (pan, tilt)     │
-│                                    │                         │
-│  MT6701 14-bit absolute encoders ◀─┘  (I2C1 pan, I2C3 tilt)  │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph PI["Raspberry Pi 5 — perception, ~5 Hz"]
+        CAM[IMX296 global shutter] --> YOLO[YOLO / NCNN]
+        YOLO --> OFF[pixel offset x,y]
+        CAM -- SensorTimestamp --> INTERP[interpolate encoder<br/>to capture instant]
+        OFF --> CMD["cmd = enc·cap_t· + offset"]
+        INTERP --> CMD
+    end
+
+    subgraph STM["STM32 Nucleo-F446RE — control, 160 Hz"]
+        RX["USART3 RX byte ISR"] --> PARSE[parse] --> TGT[target angle]
+        TIM3["TIM3 @ 160 Hz"] --> LOOP
+        TGT --> LOOP["PID + friction feedforward<br/>deadband w/ hysteresis, slew limit"]
+        ENC["MT6701 14-bit absolute<br/>I2C1 pan · I2C3 tilt"] --> LOOP
+        LOOP --> PWM[TIM2 PWM] --> DRV[TB6612FNG] --> MOT["2× 12 V gearmotor<br/>pan · tilt"]
+        MOT -.-> ENC
+    end
+
+    CMD -- "p{int} t{int}\n @ 115200" --> RX
+    STM -- "p%.2ft%.2f\n telemetry" --> INTERP
+```
 
 - **STM32 Nucleo-F446RE** — real-time motor control: UART command parsing,
   PWM generation, direction logic.
