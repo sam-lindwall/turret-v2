@@ -1,6 +1,6 @@
 # Pan-tilt auto-tracking camera
 
-Runs object detection on a Raspberry pi 5 and a PID loop built on an STM32 Nucelo-f446re to track a hand's motion
+Runs object detection on a Raspberry Pi 5 and a PID loop on an STM32 Nucleo-F446RE to track a hand's motion
 
 
 ## Architecture
@@ -28,12 +28,13 @@ flowchart TB
     STM -- "p%.2ft%.2f\n telemetry" --> INTERP
 ```
 
-- **STM32 Nucleo-F446RE** — real-time motor control: UART command parsing,
+- **STM32 Nucleo-F446RE** — real-time motor control: UART command parsing, I2C communication with encoders,
   PWM generation, direction logic.
-- **Raspberry Pi 5** — command source; vision pipeline that converts
- detected-object pixel offsets into angular commands
+- **Raspberry Pi 5** — vision pipeline that converts
+ detected-object pixel offsets into absolute angle commands.
 - **TB6612FNG** — dual H-bridge driver.
 - **2× 12V 120RPM 37mm gear motors** — pan and tilt axes.
+- **2x MT6701 Magnetic Encoder** - absolute angle reads.
 
 
 ## Roadmap
