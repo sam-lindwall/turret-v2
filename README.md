@@ -5,10 +5,6 @@ Runs object detection on a Raspberry pi 5 and a PID loop built on an STM32 Nucel
 
 ## Architecture
 
-Two processors split by timing requirement: perception on the Pi where a
-150–200 ms inference budget is acceptable, control on the STM32 where a
-160 Hz loop has to be deterministic.
-
 ```mermaid
 flowchart TB
     subgraph PI["Raspberry Pi 5 — perception, ~5 Hz"]
