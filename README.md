@@ -1,4 +1,4 @@
-# Pan-tilt vision-tracking robot — real-time PID on STM32, YOLO on Raspberry Pi
+# Pan-tilt vision-tracking robot (PID control on STM32, YOLO on Raspberry Pi)
 
 Runs object detection on a Raspberry Pi 5 and a PID loop on an STM32 Nucleo-F446RE to track a hand's motion
 
