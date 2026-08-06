@@ -17,7 +17,6 @@ Runs object detection on a Raspberry Pi 5 and a PID loop on an STM32 Nucleo-F446
 ## Architecture
 ```mermaid
 flowchart LR
-    PI ~~~ STM
     subgraph PI["Raspberry Pi 5 — perception, ~5 Hz"]
         direction TB
         CAM["IMX296 global shutter<br/>+ capture timestamp"]
@@ -26,7 +25,6 @@ flowchart LR
         CMD["cmd = encoder + offset"]
         CAM --> YOLO --> OFF --> CMD
     end
-
     subgraph STM["STM32 Nucleo-F446RE — control, 160 Hz"]
         direction TB
         RX["USART3 RX + parse"]
@@ -37,12 +35,10 @@ flowchart LR
         RX --> LOOP --> PWM --> MOT --> ENC
         ENC -.-> LOOP
     end
-
+    PI ~~~ STM
     CMD -- "p{int} t{int} @ 115200" --> RX
     ENC -- "encoder angle" --> CMD
-    CMD ~~~ RX
 ```
-
 - **STM32 Nucleo-F446RE** — real-time motor control: UART command parsing, I2C communication with encoders,
   PWM generation, direction logic.
 - **Raspberry Pi 5** — vision pipeline that converts
