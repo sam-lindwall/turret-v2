@@ -17,6 +17,7 @@ Runs object detection on a Raspberry Pi 5 and a PID loop on an STM32 Nucleo-F446
 ## Architecture
 ```mermaid
 flowchart LR
+    PI ~~~ STM
     subgraph PI["Raspberry Pi 5 — perception, ~5 Hz"]
         direction TB
         CAM["IMX296 global shutter<br/>+ capture timestamp"]
