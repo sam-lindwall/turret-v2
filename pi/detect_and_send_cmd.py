@@ -1,7 +1,3 @@
-"""
-simple_track.py -- closed-loop hand tracking, Pi 5 -> STM32.
-
-"""
 import csv
 import time
 import threading
