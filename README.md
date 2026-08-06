@@ -27,9 +27,9 @@ flowchart LR
     end
     subgraph STM["STM32 Nucleo-F446RE — control, 160 Hz"]
         direction TB
-        RX["USART3 RX + parse"]
-        LOOP["PID + friction feedforward<br/>deadband, slew limit"]
-        PWM["TIM2 PWM → TB6612FNG"]
+        RX["UART RX + parse"]
+        LOOP["PID Loop"]
+        PWM["PWM → TB6612FNG"]
         MOT["2× 12 V gearmotor<br/>pan · tilt"]
         ENC["MT6701 encoders<br/>I2C1 pan · I2C3 tilt"]
         RX --> LOOP --> PWM --> MOT --> ENC
@@ -37,7 +37,7 @@ flowchart LR
     end
     PI ~~~ STM
     CMD -- "p{int} t{int} @ 115200" --> RX
-    ENC -- "encoder angle" --> CMD
+    ENC -- "UART encoder angle" --> CMD
 ```
 - **STM32 Nucleo-F446RE** — real-time motor control: UART command parsing, I2C communication with encoders,
   PWM generation, direction logic.
