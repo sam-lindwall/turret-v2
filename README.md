@@ -54,7 +54,7 @@ flowchart LR
 **Time misalignment led to tracking instability.** `cmd = encoder + offset`
 only works if the moment the absolute position from the encoder is read at the same time the offset is computed. Previously, it wasn't: the offset was measured at frame capture, but the encoder was read after ~200 ms of inference. If the motor has already moved for ~200ms towards the previous target when the new command is sent, the unintended result is sustained hunting. The solution was to interpolate the encoder back to the frame's capture timestamp from a telemetry history buffer. This eliminated the time between when the absolute angle is measured and when the pixel offset is computed.
 
-**Friction feedforward from open-loop system ID.** The gearmotors need > 8.5% duty to break stiction, so a pure PID output stayed below the breakaway threshold on small errors. An open-loop duty/velocity sweep gave the minimum duty to move the motors (~85 counts out of 999) and the
+**Friction feedforward from open-loop system ID.** The pan gearmotor needs> 8.5% duty to break stiction, so a pure PID output stayed below the breakaway threshold on small errors. An open-loop duty/velocity sweep gave the minimum duty to move the motors (~85 counts out of 999) and the
 slope (kv = 1.6 counts per °/s). Adding both as feedforward terms meant the controller starts every move above breakaway instead of ramping into it. The result: the axis moves for 98% of frames where the target was moving, up from 38%.
 
 **Backlash sets the deadband.** Pan carries ~5–6° of gearbox backlash; closing tighter 
